@@ -42,7 +42,12 @@ def main():
             ws = writer.sheets["Sheet1"]
             
             col = df.shape[1]+2
-            ws.cell(row=1, column=col, value="Total energy [kWh]").font = Font(bold=True)
+            if energy < 1:
+                label_e = "Total energy [Wh]"
+                energy = energy * 1000
+            else:
+                label_e = "Total energy [Wh]"
+            ws.cell(row=1, column=col, value=label_e).font = Font(bold=True)
             ws.cell(row=2, column=col, value=energy).fill = PatternFill(start_color="00FF00", patternType='solid')
         print("Export completed")
 
