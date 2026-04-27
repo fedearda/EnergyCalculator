@@ -14,6 +14,12 @@ def main():
 
     mdf = MDF(args.input)
     signals_list = "BMC_Strom", "BMC_Spannung"
+    
+    missing_signals = [s for s in signals_list if s not in mdf]
+    
+    if missing_signals:
+        raise ValueError(f"The following signals were not found in the trace: {' ,'.join(missing_signals)}")
+        
     df = mdf.to_dataframe(channels=signals_list)
     df.reset_index(names="timestamp",inplace=True)
     
