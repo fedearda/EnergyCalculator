@@ -6,6 +6,7 @@ from openpyxl.styles import Font, PatternFill
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("input", help="Input MF4 file")
+    parser.add_argument("--search", help="Search for signal name - the other args will be ignored", default=None, nargs='+')
     parser.add_argument("--output", help="Output Excel file", default=None)
     parser.add_argument("--start", type=float, default=None, help="Start time in seconds to cut data")
     parser.add_argument("--stop", type=float, default=None, help="End time in seconds to cut data")
@@ -13,6 +14,17 @@ def main():
     args = parser.parse_args()
 
     mdf = MDF(args.input)
+    if args.search is not None:
+        found = False
+        for key in args.search:
+            for name in mdf.channels_db:
+                if name.__contains__(key):
+                    print(f"{name}")
+                    found = True
+        if not found: print("No signal found")
+        return
+                    
+    
     signals_list = "BMC_Strom", "BMC_Spannung"
     
     missing_signals = [s for s in signals_list if s not in mdf]
