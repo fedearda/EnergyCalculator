@@ -5,24 +5,26 @@ import matplotlib.pyplot as plt
 from openpyxl.styles import Font, PatternFill
 
 def plot_energy(df):
-    fig, ax1 = plt.subplots(figsize=(10, 6))
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(12, 8), sharex=True)
+    # --- Top plot: Power ---
+    ax1.plot(df["timestamp"], df["Instant power [W]"]/1000,
+            color="green", linewidth=1.5)
+    ax1.set_ylabel("Power [kW]")
+    ax1.set_title("Power, energy and SOC vs Time")
+    ax1.grid(True, linestyle="--", alpha=0.6)
+    
+    # --- Middle plot: Energy ---
+    ax2.plot(df["timestamp"], df["Accumulated energy [kWh]"],
+            color="blue", linewidth=2)
+    ax2.set_ylabel("Energy [kWh]")
+    ax2.grid(True, linestyle="--", alpha=0.6)
 
-    # First Y axis (left)
-    ax1.plot(df["timestamp"], df["Accumulated energy [kWh]"],
-            color="blue", label="Energy", linewidth=2)
-    ax1.set_xlabel("Time [s]")
-    ax1.set_ylabel("Energy [kWh]", color="blue")
-    ax1.tick_params(axis='y', labelcolor="blue")
-
-    # Second Y axis (right)
-    ax2 = ax1.twinx()
-    ax2.plot(df["timestamp"], df["Instant power [W]"]/1000,
-            color="green", label="Power", linewidth=1)
-    ax2.set_ylabel("Power [kW]", color="green")
-    ax2.tick_params(axis='y', labelcolor="green")
-
-    plt.title("Energy and Power vs Time")
-    plt.grid(True)
+    # --- Bottom plot: SOC ---
+    ax3.plot(df["timestamp"], df["SOC [%]"],
+            color="red", linewidth=2)
+    ax3.set_xlabel("Time [s]")
+    ax3.set_ylabel("SOC [%]")
+    ax3.grid(True, linestyle="--", alpha=0.6)
     plt.tight_layout()
     plt.show()
 
@@ -48,7 +50,7 @@ def main():
         return
                     
     
-    signals_list = "BMC_Strom", "BMC_Spannung"
+    signals_list = "BMC_Strom", "BMC_Spannung", "BMC_TechnischerSOC"
     
     missing_signals = [s for s in signals_list if s not in mdf]
     
@@ -65,6 +67,7 @@ def main():
         df = df[df["timestamp"] <= args.stop]
         
     df["Instant power [W]"] = -df["BMC_Strom"]*df["BMC_Spannung"]
+    df.rename(columns={"BMC_TechnischerSOC": "SOC [%]"}, inplace=True)
     
     t = df["timestamp"].values
     p = df["Instant power [W]"].values
