@@ -1,7 +1,30 @@
 import argparse
 from asammdf import MDF
 import pandas as pd
+import matplotlib.pyplot as plt
 from openpyxl.styles import Font, PatternFill
+
+def plot_energy(df):
+    fig, ax1 = plt.subplots(figsize=(10, 6))
+
+    # First Y axis (left)
+    ax1.plot(df["timestamp"], df["Accumulated energy [kWh]"],
+            color="blue", label="Energy", linewidth=2)
+    ax1.set_xlabel("Time [s]")
+    ax1.set_ylabel("Energy [kWh]", color="blue")
+    ax1.tick_params(axis='y', labelcolor="blue")
+
+    # Second Y axis (right)
+    ax2 = ax1.twinx()
+    ax2.plot(df["timestamp"], df["Instant power [W]"]/1000,
+            color="green", label="Power", linewidth=1)
+    ax2.set_ylabel("Power [kW]", color="green")
+    ax2.tick_params(axis='y', labelcolor="green")
+
+    plt.title("Energy and Power vs Time")
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
 
 def main():
     parser = argparse.ArgumentParser()
@@ -47,10 +70,14 @@ def main():
     p = df["Instant power [W]"].values
     CONVERSION_FACTOR = 1/3600/1000
     energy = 0
+    energy_series = [0]
     
     for i in range(1, len(p)):
         dt = t[i] - t[i-1]
         energy = energy + (p[i] + p[i-1]) * 0.5 * dt * CONVERSION_FACTOR
+        energy_series.append(energy)
+    
+    df["Accumulated energy [kWh]"] = energy_series
     
     print(f"Total energy = {energy:.3f} kWh")
     
@@ -68,6 +95,8 @@ def main():
             ws.cell(row=1, column=col, value=label_e).font = Font(bold=True)
             ws.cell(row=2, column=col, value=energy).fill = PatternFill(start_color="00FF00", patternType='solid')
         print("Export completed")
+        
+    plot_energy(df)
 
 if __name__ == "__main__":
     main()
