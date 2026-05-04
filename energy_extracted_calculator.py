@@ -12,6 +12,7 @@ def plot_energy(df):
     ax1.set_ylabel("Power [kW]")
     ax1.set_title("Power, energy and SOC vs Time")
     ax1.grid(True, linestyle="--", alpha=0.6)
+    ax1.axhline(0, color='black', linewidth=0.7, linestyle="-.")
     
     # --- Middle plot: Energy ---
     ax2.plot(df["timestamp"], df["Accumulated energy [kWh]"],
