@@ -36,6 +36,7 @@ def main():
     parser.add_argument("--output", help="Output Excel file", default=None)
     parser.add_argument("--start", type=float, default=None, help="Start time in seconds to cut data")
     parser.add_argument("--stop", type=float, default=None, help="End time in seconds to cut data")
+    parser.add_argument("-p","--plot", action="store_true", help="Plot the results")
 
     args = parser.parse_args()
 
@@ -99,8 +100,7 @@ def main():
             ws.cell(row=1, column=col, value=label_e).font = Font(bold=True)
             ws.cell(row=2, column=col, value=energy).fill = PatternFill(start_color="00FF00", patternType='solid')
         print("Export completed")
-        
-    plot_energy(df)
+    if args.plot: plot_energy(df)
 
 if __name__ == "__main__":
     main()

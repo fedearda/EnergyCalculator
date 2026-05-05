@@ -1,8 +1,0 @@
-Prerequisites: Python installed 
-0. Put the trace in the same folder as energy_extracted_calculator.py
-1. Open terminal 
-2. Insert the following command:
-python .\energy_extracted_calculator.py <inputFile>.mf4 with the file name of the trace instead of <inputFile>
--. Optional: --output <filename>.xlsx -> extracts a report containing the data from the trace
-             --start  <startTime>     -> choose a timestamp to start the calculation from
-             --stop   <stopTime>      -> choose a timestamp to stop che calculation to
